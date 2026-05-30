@@ -12,12 +12,8 @@ import {
   Check
 } from 'lucide-react';
 
-// ✅ FIXED: strict API (no silent fallback)
-const API = import.meta.env.VITE_API_URL;
-
-if (!API) {
-  throw new Error("VITE_API_URL is not defined in environment variables");
-}
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API = `${BASE}/api`;
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('courses');
