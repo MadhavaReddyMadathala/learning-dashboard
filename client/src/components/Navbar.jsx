@@ -11,12 +11,13 @@ const Navbar = () => {
     navigate('/login');
   };
 
+  // Don’t render navbar if user is not logged in
   if (!user) return null;
 
   return (
     <nav className="sticky top-0 z-50 w-full glass-panel border-b border-slate-800 backdrop-blur-md px-6 py-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        
+
         {/* Brand Logo */}
         <Link to="/" className="flex items-center space-x-2 group">
           <div className="bg-brand-500 text-white p-2 rounded-xl shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform">
@@ -35,7 +36,6 @@ const Navbar = () => {
           >
             {user.role === 'admin' ? 'Admin Panel' : 'Dashboard'}
           </Link>
-          )}
         </div>
 
         {/* Profile / Actions */}
@@ -46,7 +46,11 @@ const Navbar = () => {
             ) : (
               <UserIcon size={14} className="text-brand-400" />
             )}
-            <span className="text-xs font-semibold text-slate-300">{user.name}</span>
+
+            <span className="text-xs font-semibold text-slate-300">
+              {user.name}
+            </span>
+
             <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 border border-slate-700">
               {user.role}
             </span>
