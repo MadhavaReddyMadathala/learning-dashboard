@@ -321,23 +321,6 @@ const AdminPanel = () => {
         </div>
       )}
 
-      {/* VIEW AS STUDENT TAB */}
-      {activeTab === 'view-as-student' && (
-        <div className="space-y-6">
-          <div className="flex items-center gap-4 flex-wrap">
-            <label className="text-sm text-slate-400 font-semibold">Select student:</label>
-            <select
-              onChange={(e) => setExpandedStudent(e.target.value)}
-              value={expandedStudent || ''}
-              className="bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-brand-500"
-            >
-              <option value="" disabled>— pick a student —</option>
-              {students.map(st => (
-                <option key={st._id} value={st._id}>{st.name} ({st.email})</option>
-              ))}
-            </select>
-          </div>
-
           {(() => {
             const st = students.find(s => s._id === expandedStudent);
             if (!st) return (
