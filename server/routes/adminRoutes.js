@@ -2,11 +2,11 @@ import express from 'express';
 import User from '../models/User.js';
 import Enrollment from '../models/Enrollment.js';
 import { protect } from '../middleware/authMiddleware.js';
-import adminOnly from '../middleware/adminMiddleware.js';
+import {admin} from '../middleware/adminMiddleware.js';
 
 const router = express.Router();
 
-router.get('/students', protect, adminOnly, async (req, res) => {
+router.get('/students', protect, admin, async (req, res) => {
   try {
     const students = await User.find({ role: 'student' }).select('-password');
     const result = await Promise.all(
