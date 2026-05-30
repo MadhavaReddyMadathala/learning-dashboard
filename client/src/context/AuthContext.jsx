@@ -5,11 +5,10 @@ const AuthContext = createContext(null);
 
 const BASE = import.meta.env.VITE_API_URL 
   || "http://localhost:5000";
-const API = `${BASE}/api/auth`;
 
-if (!API) {
-  throw new Error("VITE_API_URL is not defined in environment variables");
-}
+const BASE = import.meta.env.VITE_API_URL 
+  || "http://localhost:5000";
+const API = `${BASE}/api/auth`;
 
 // Axios helper to set/remove token
 const setAuthHeader = (token) => {
