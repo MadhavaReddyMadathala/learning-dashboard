@@ -3,7 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ChevronLeft, CheckCircle2, Circle, Clock, BookOpen, AlertCircle, PlayCircle } from 'lucide-react';
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API = `${BASE}/api`;
 
 const CourseDetail = () => {
   const { id: courseId } = useParams();
