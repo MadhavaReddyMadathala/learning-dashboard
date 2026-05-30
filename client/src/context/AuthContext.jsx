@@ -3,11 +3,8 @@ import axios from "axios";
 
 const AuthContext = createContext(null);
 
-const BASE = import.meta.env.VITE_API_URL 
-  || "http://localhost:5000";
-
-const BASE = import.meta.env.VITE_API_URL 
-  || "http://localhost:5000";
+// ✅ FIXED: single declaration, no duplicate
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const API = `${BASE}/api/auth`;
 
 // Axios helper to set/remove token
@@ -30,15 +27,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkLoggedIn = async () => {
       const token = localStorage.getItem("token");
-
       if (!token) {
         setUser(null);
         setLoading(false);
         return;
       }
-
       setAuthHeader(token);
-
       try {
         const { data } = await axios.get(`${API}/me`);
         setUser(data);
@@ -50,7 +44,6 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
-
     checkLoggedIn();
   }, []);
 
@@ -58,7 +51,6 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password, role = "student") => {
     setLoading(true);
     setError(null);
-
     try {
       const { data } = await axios.post(`${API}/register`, {
         name,
@@ -66,13 +58,10 @@ export const AuthProvider = ({ children }) => {
         password,
         role,
       });
-
       const { token, user: userData } = data;
-
       localStorage.setItem("token", token);
       setAuthHeader(token);
       setUser(userData);
-
       return userData;
     } catch (err) {
       const errMsg = err.response?.data?.message || "Registration failed";
@@ -87,19 +76,15 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     setError(null);
-
     try {
       const { data } = await axios.post(`${API}/login`, {
         email,
         password,
       });
-
       const { token, user: userData } = data;
-
       localStorage.setItem("token", token);
       setAuthHeader(token);
       setUser(userData);
-
       return userData;
     } catch (err) {
       const errMsg = err.response?.data?.message || "Login failed";
@@ -113,7 +98,6 @@ export const AuthProvider = ({ children }) => {
   // 🔴 LOGOUT
   const logout = async () => {
     setLoading(true);
-
     try {
       await axios.post(`${API}/logout`);
     } catch (err) {
@@ -145,10 +129,8 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-
   if (!context) {
     throw new Error("useAuth must be used within AuthProvider");
   }
-
   return context;
 };
