@@ -17,7 +17,8 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const { data: coursesData } = await axios.get(`${API}/api/courses`);
+      // ✅ FIXED: removed duplicate /api
+      const { data: coursesData } = await axios.get(`${API}/courses`);
       setCourses(coursesData);
 
       // Check progress for each course to check if enrolled
@@ -25,7 +26,8 @@ const Dashboard = () => {
       await Promise.all(
         coursesData.map(async (course) => {
           try {
-            const { data: progressData } = await axios.get(`${API}/api/progress/${course._id}`);
+            // ✅ FIXED: removed duplicate /api
+            const { data: progressData } = await axios.get(`${API}/progress/${course._id}`);
             enrollmentsMap[course._id] = progressData;
           } catch (err) {
             // Not enrolled (404) or failed
@@ -50,7 +52,8 @@ const Dashboard = () => {
     setEnrollingId(courseId);
     setError(null);
     try {
-      await axios.post(`${API}/api/enroll/${courseId}`);
+      // ✅ FIXED: removed duplicate /api
+      await axios.post(`${API}/enroll/${courseId}`);
       // Refresh data
       await fetchDashboardData();
     } catch (err) {
