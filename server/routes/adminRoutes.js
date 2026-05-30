@@ -32,5 +32,19 @@ router.get('/students', protect, admin, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
+// GET /api/admin/progress/:userId/:courseId
+router.get('/progress/:userId/:courseId', protect, admin, async (req, res) => {
+  try {
+    const enrollment = await Enrollment.findOne({
+      userId: req.params.userId,
+      courseId: req.params.courseId,
+    }).populate('courseId');
+    if (!enrollment) {
+      return res.status(404).json({ message: 'Enrollment not found' });
+    }
+    res.json(enrollment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 export default router;
