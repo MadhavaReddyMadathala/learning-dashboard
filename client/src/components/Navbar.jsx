@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, BookOpen, User as UserIcon, ShieldAlert, Eye } from 'lucide-react';
+import { LogOut, BookOpen, User as UserIcon, ShieldAlert } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -12,10 +12,6 @@ const Navbar = () => {
   const handleLogout = async () => {
     await logout();
     navigate('/login');
-  };
-
-  const handleViewAsStudent = () => {
-    navigate('/student-view'); // change route if needed
   };
 
   return (
@@ -44,17 +40,6 @@ const Navbar = () => {
 
         {/* Profile / Actions */}
         <div className="flex items-center space-x-4">
-          
-          {/* View as Student Button (Admin only) */}
-          {user.role === 'admin' && (
-            <button
-              onClick={handleViewAsStudent}
-              className="flex items-center space-x-2 text-sm font-medium px-4 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all cursor-pointer"
-            >
-              <Eye size={16} className="text-brand-400" />
-              <span className="hidden sm:inline">View as Student</span>
-            </button>
-          )}
 
           {/* Profile badge */}
           <div className="flex items-center space-x-2.5 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
@@ -90,4 +75,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
