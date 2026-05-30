@@ -35,14 +35,6 @@ const Navbar = () => {
           >
             {user.role === 'admin' ? 'Admin Panel' : 'Dashboard'}
           </Link>
-          
-          {user.role === 'admin' && (
-            <Link
-              to="/dashboard"
-              className="text-sm font-medium text-slate-400 hover:text-white transition-colors flex items-center space-x-1"
-            >
-              <span>View as Student</span>
-            </Link>
           )}
         </div>
 
