@@ -6,6 +6,8 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  if (!user) return null;
+
   const handleLogout = async () => {
     await logout();
     navigate('/login');
