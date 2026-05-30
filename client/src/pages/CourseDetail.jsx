@@ -20,11 +20,11 @@ const CourseDetail = () => {
     const fetchCourseAndProgress = async () => {
       try {
         // Fetch course details
-        const { data: courseData } = await axios.get(`${API}/api/courses/${courseId}`);
+        const { data: courseData } = await axios.get(`${API}/courses/${courseId}`);
         setCourse(courseData);
 
         // Fetch user progress for course
-        const { data: enrollmentData } = await axios.get(`${API}/api/progress/${courseId}`);
+        const { data: enrollmentData } = await axios.get(`${API}/progress/${courseId}`);
         setEnrollment(enrollmentData);
       } catch (err) {
         console.error(err);
@@ -46,7 +46,7 @@ const CourseDetail = () => {
     setUpdatingLesson(lessonTitle);
     
     try {
-      const { data } = await axios.put(`${API}/api/progress/${courseId}`, { lessonTitle });
+      const { data } = await axios.put(`${API}/progress/${courseId}`, { lessonTitle });
       setEnrollment(data);
     } catch (err) {
       console.error(err);
