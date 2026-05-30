@@ -244,7 +244,7 @@ const AdminPanel = () => {
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 font-bold text-sm">
-                      {st.name.charAt(0).toUpperCase()}
+                      {st.name ? st.name.charAt(0).toUpperCase() : '?'}
                     </div>
                     <div>
                       <p className="font-semibold text-white">{st.name}</p>
@@ -349,7 +349,7 @@ const AdminPanel = () => {
                 {/* Student identity card */}
                 <div className="flex items-center gap-4 p-5 glass-panel rounded-2xl">
                   <div className="w-12 h-12 rounded-full bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 font-bold text-lg">
-                    {st.name.charAt(0).toUpperCase()}
+                    {st.name ? st.name.charAt(0).toUpperCase() : '?'}
                   </div>
                   <div>
                     <p className="font-bold text-white text-lg">{st.name}</p>

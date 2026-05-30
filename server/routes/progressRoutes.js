@@ -62,6 +62,7 @@ router.put('/:courseId', protect, async (req, res) => {
     } else {
       enrollment.completedLessons.push(lessonTitle);
     }
+    enrollment.markModified('completedLessons');
 
     // Calculate progress
     const totalLessons = course.lessons.length;

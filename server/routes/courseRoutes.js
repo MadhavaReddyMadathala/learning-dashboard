@@ -1,5 +1,6 @@
 import express from 'express';
 import Course from '../models/Course.js';
+import Enrollment from '../models/Enrollment.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { admin } from '../middleware/adminMiddleware.js';
 
@@ -94,6 +95,7 @@ router.delete('/:id', protect, admin, async (req, res) => {
 
     if (course) {
       await Course.deleteOne({ _id: req.params.id });
+      await Enrollment.deleteMany({ courseId: req.params.id });
       res.json({ message: 'Course removed' });
     } else {
       res.status(404).json({ message: 'Course not found' });
