@@ -3,12 +3,9 @@ import axios from "axios";
 
 const AuthContext = createContext(null);
 
-/*
-  IMPORTANT:
-  Your VITE_API_URL must be like:
-  https://your-railway-app.up.railway.app/api/auth
-*/
-const API = import.meta.env.VITE_API_URL;
+const BASE = import.meta.env.VITE_API_URL 
+  || "http://localhost:5000";
+const API = `${BASE}/api/auth`;
 
 if (!API) {
   throw new Error("VITE_API_URL is not defined in environment variables");
