@@ -2,7 +2,7 @@ import express from 'express';
 import User from '../models/User.js';
 import Enrollment from '../models/Enrollment.js';
 import { protect } from '../middleware/authMiddleware.js';
-import { adminOnly } from '../middleware/adminMiddleware.js';
+import adminOnly from '../middleware/adminMiddleware.js';
 
 const router = express.Router();
 
