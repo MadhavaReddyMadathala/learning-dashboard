@@ -12,7 +12,6 @@ import {
   Check
 } from 'lucide-react';
 
-// ✅ FIXED: BASE + /api pattern
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const API = `${BASE}/api`;
 
@@ -23,6 +22,7 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [expandedStudent, setExpandedStudent] = useState(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [currentCourseId, setCurrentCourseId] = useState(null);
@@ -39,14 +39,11 @@ const AdminPanel = () => {
   const fetchAdminData = async () => {
     setLoading(true);
     setError(null);
-
     try {
-      // ✅ FIXED: no duplicate /api
       const [coursesRes, studentsRes] = await Promise.all([
         axios.get(`${API}/courses`),
         axios.get(`${API}/admin/students`)
       ]);
-
       setCourses(coursesRes.data);
       setStudents(studentsRes.data);
     } catch (err) {
@@ -57,37 +54,23 @@ const AdminPanel = () => {
     }
   };
 
-  useEffect(() => {
-    fetchAdminData();
-  }, []);
+  useEffect(() => { fetchAdminData(); }, []);
 
-  const clearAlerts = () => {
-    setError(null);
-    setSuccess(null);
-  };
+  const clearAlerts = () => { setError(null); setSuccess(null); };
 
   // ---------------- MODAL ----------------
   const handleOpenAddModal = () => {
-    setIsEditing(false);
-    setCurrentCourseId(null);
-    setTitle('');
-    setDescription('');
-    setThumbnail('');
-    setDuration('');
-    setLessons([]);
-    setNewLessonInput('');
+    setIsEditing(false); setCurrentCourseId(null);
+    setTitle(''); setDescription(''); setThumbnail('');
+    setDuration(''); setLessons([]); setNewLessonInput('');
     setShowCourseModal(true);
   };
 
   const handleOpenEditModal = (course) => {
-    setIsEditing(true);
-    setCurrentCourseId(course._id);
-    setTitle(course.title);
-    setDescription(course.description);
-    setThumbnail(course.thumbnail);
-    setDuration(course.duration);
-    setLessons(course.lessons || []);
-    setNewLessonInput('');
+    setIsEditing(true); setCurrentCourseId(course._id);
+    setTitle(course.title); setDescription(course.description);
+    setThumbnail(course.thumbnail); setDuration(course.duration);
+    setLessons(course.lessons || []); setNewLessonInput('');
     setShowCourseModal(true);
   };
 
@@ -103,27 +86,19 @@ const AdminPanel = () => {
 
   // ---------------- SAVE COURSE ----------------
   const handleSubmitCourse = async (e) => {
-    e.preventDefault();
-    clearAlerts();
-
+    e.preventDefault(); clearAlerts();
     if (!title || !description || !duration) {
-      setError('Title, description, and duration are required');
-      return;
+      setError('Title, description, and duration are required'); return;
     }
-
     const payload = { title, description, thumbnail, duration, lessons };
-
     try {
       if (isEditing) {
-        // ✅ FIXED: no duplicate /api
         await axios.put(`${API}/courses/${currentCourseId}`, payload);
         setSuccess('Course updated successfully');
       } else {
-        // ✅ FIXED: no duplicate /api
         await axios.post(`${API}/courses`, payload);
         setSuccess('Course created successfully');
       }
-
       setShowCourseModal(false);
       fetchAdminData();
     } catch (err) {
@@ -134,9 +109,7 @@ const AdminPanel = () => {
   // ---------------- DELETE COURSE ----------------
   const handleDeleteCourse = async (courseId) => {
     if (!window.confirm('Delete this course?')) return;
-
     try {
-      // ✅ FIXED: no duplicate /api
       await axios.delete(`${API}/courses/${courseId}`);
       setSuccess('Course deleted');
       fetchAdminData();
@@ -145,15 +118,12 @@ const AdminPanel = () => {
     }
   };
 
-  // ---------------- UI ----------------
   if (loading && courses.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-6 py-10 animate-pulse">
         <div className="h-10 bg-slate-900 w-1/3 rounded-xl mb-6"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((n) => (
-            <div key={n} className="h-40 bg-slate-900 rounded-2xl"></div>
-          ))}
+          {[1, 2, 3].map((n) => <div key={n} className="h-40 bg-slate-900 rounded-2xl"></div>)}
         </div>
       </div>
     );
@@ -170,12 +140,9 @@ const AdminPanel = () => {
           </h1>
           <p className="text-slate-400 mt-1">Manage courses & students</p>
         </div>
-
         {activeTab === 'courses' && (
-          <button
-            onClick={handleOpenAddModal}
-            className="bg-brand-500 hover:bg-brand-600 px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-semibold transition-all"
-          >
+          <button onClick={handleOpenAddModal}
+            className="bg-brand-500 hover:bg-brand-600 px-4 py-2 rounded-xl flex items-center gap-2 text-sm font-semibold transition-all">
             <Plus size={16} /> Add Course
           </button>
         )}
@@ -195,25 +162,26 @@ const AdminPanel = () => {
 
       {/* TABS */}
       <div className="flex gap-2 mb-8 border-b border-slate-800 pb-2">
-        <button
-          onClick={() => setActiveTab('courses')}
+        <button onClick={() => setActiveTab('courses')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
             activeTab === 'courses'
               ? 'bg-brand-500/10 text-brand-400 border border-brand-500/20'
-              : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <BookOpen size={15} /> Courses
+              : 'text-slate-400 hover:text-white'}`}>
+          <BookOpen size={15} /> Courses ({courses.length})
         </button>
-        <button
-          onClick={() => setActiveTab('students')}
+        <button onClick={() => setActiveTab('students')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
             activeTab === 'students'
               ? 'bg-brand-500/10 text-brand-400 border border-brand-500/20'
-              : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <Users size={15} /> Students
+              : 'text-slate-400 hover:text-white'}`}>
+          <Users size={15} /> Students ({students.length})
+        </button>
+        <button onClick={() => { setActiveTab('view-as-student'); setExpandedStudent(null); }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            activeTab === 'view-as-student'
+              ? 'bg-brand-500/10 text-brand-400 border border-brand-500/20'
+              : 'text-slate-400 hover:text-white'}`}>
+          👁 View as Student
         </button>
       </div>
 
@@ -221,18 +189,13 @@ const AdminPanel = () => {
       {activeTab === 'courses' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.length === 0 && (
-            <p className="text-slate-500 col-span-3 text-center py-12">
-              No courses yet. Add your first course!
-            </p>
+            <p className="text-slate-500 col-span-3 text-center py-12">No courses yet. Add your first course!</p>
           )}
           {courses.map(course => (
             <div key={course._id} className="glass-panel rounded-2xl overflow-hidden">
               {course.thumbnail && (
-                <img
-                  src={course.thumbnail}
-                  alt={course.title}
-                  className="w-full h-36 object-cover opacity-80"
-                />
+                <img src={course.thumbnail} alt={course.title}
+                  className="w-full h-36 object-cover opacity-80" />
               )}
               <div className="p-5 space-y-3">
                 <h3 className="font-bold text-white text-base line-clamp-1">{course.title}</h3>
@@ -242,16 +205,12 @@ const AdminPanel = () => {
                   <span>{course.duration}</span>
                 </div>
                 <div className="flex gap-2 pt-1">
-                  <button
-                    onClick={() => handleOpenEditModal(course)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-all"
-                  >
+                  <button onClick={() => handleOpenEditModal(course)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-all">
                     <Edit2 size={12} /> Edit
                   </button>
-                  <button
-                    onClick={() => handleDeleteCourse(course._id)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold transition-all"
-                  >
+                  <button onClick={() => handleDeleteCourse(course._id)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold transition-all">
                     <Trash2 size={12} /> Delete
                   </button>
                 </div>
@@ -263,123 +222,251 @@ const AdminPanel = () => {
 
       {/* STUDENTS TAB */}
       {activeTab === 'students' && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {students.length === 0 && (
-            <p className="text-slate-500 text-center py-12">No students enrolled yet.</p>
+            <p className="text-slate-500 text-center py-12">No students registered yet.</p>
           )}
-          {students.map(st => (
-            <div key={st._id} className="glass-panel rounded-2xl p-5 flex items-center justify-between">
-              <div>
-                <p className="font-semibold text-white">{st.name}</p>
-                <p className="text-slate-400 text-sm">{st.email}</p>
+          {students.map(st => {
+            const isExpanded = expandedStudent === st._id;
+            const enrollmentCount = st.enrollments?.length || 0;
+            const completedCount = st.enrollments?.filter(e => e.progress === 100).length || 0;
+            const avgProgress = enrollmentCount > 0
+              ? Math.round(st.enrollments.reduce((sum, e) => sum + e.progress, 0) / enrollmentCount)
+              : 0;
+
+            return (
+              <div key={st._id} className="glass-panel rounded-2xl overflow-hidden">
+
+                {/* Student header row */}
+                <div
+                  className="flex items-center justify-between p-5 cursor-pointer hover:bg-slate-800/30 transition-all"
+                  onClick={() => setExpandedStudent(isExpanded ? null : st._id)}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 font-bold text-sm">
+                      {st.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">{st.name}</p>
+                      <p className="text-slate-400 text-sm">{st.email}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-6">
+                    <div className="text-center hidden sm:block">
+                      <p className="text-xs text-slate-500 uppercase tracking-wider">Enrolled</p>
+                      <p className="text-lg font-bold text-white">{enrollmentCount}</p>
+                    </div>
+                    <div className="text-center hidden sm:block">
+                      <p className="text-xs text-slate-500 uppercase tracking-wider">Completed</p>
+                      <p className="text-lg font-bold text-emerald-400">{completedCount}</p>
+                    </div>
+                    {enrollmentCount > 0 && (
+                      <div className="text-center hidden md:block">
+                        <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Avg Progress</p>
+                        <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-brand-500 to-indigo-500 rounded-full"
+                            style={{ width: `${avgProgress}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-brand-400 font-bold mt-1">{avgProgress}%</p>
+                      </div>
+                    )}
+                    <span className="text-slate-400 text-lg">{isExpanded ? '▲' : '▼'}</span>
+                  </div>
+                </div>
+
+                {/* Expanded: per-course progress */}
+                {isExpanded && (
+                  <div className="border-t border-slate-800 px-5 pb-5 pt-4 space-y-3">
+                    {enrollmentCount === 0 ? (
+                      <p className="text-slate-500 text-sm text-center py-4">Not enrolled in any courses.</p>
+                    ) : (
+                      <>
+                        <p className="text-xs font-bold uppercase text-slate-500 tracking-wider mb-3">Course Progress</p>
+                        {st.enrollments.map(enrollment => (
+                          <div key={enrollment.enrollmentId} className="bg-slate-900/60 rounded-xl p-4 border border-slate-800">
+                            <div className="flex items-center justify-between mb-2">
+                              <p className="text-sm font-semibold text-white">{enrollment.courseTitle}</p>
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                                enrollment.progress === 100
+                                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                  : enrollment.progress > 0
+                                  ? 'bg-brand-500/10 text-brand-400 border border-brand-500/20'
+                                  : 'bg-slate-800 text-slate-500'
+                              }`}>
+                                {enrollment.progress === 100 ? '✓ Done' : `${enrollment.progress}%`}
+                              </span>
+                            </div>
+                            <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-2">
+                              <div
+                                className="h-full bg-gradient-to-r from-brand-500 to-indigo-500 rounded-full transition-all duration-500"
+                                style={{ width: `${enrollment.progress}%` }}
+                              />
+                            </div>
+                            <div className="flex items-center justify-between text-xs text-slate-500">
+                              <span>{enrollment.completedLessonsCount} / {enrollment.totalLessonsCount} lessons done</span>
+                              <span>{enrollment.duration}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
-              <span className="text-xs px-3 py-1 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 font-semibold">
-                {st.role}
-              </span>
-            </div>
-          ))}
+            );
+          })}
+        </div>
+      )}
+
+      {/* VIEW AS STUDENT TAB */}
+      {activeTab === 'view-as-student' && (
+        <div className="space-y-6">
+          <div className="flex items-center gap-4 flex-wrap">
+            <label className="text-sm text-slate-400 font-semibold">Select student:</label>
+            <select
+              onChange={(e) => setExpandedStudent(e.target.value)}
+              value={expandedStudent || ''}
+              className="bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-brand-500"
+            >
+              <option value="" disabled>— pick a student —</option>
+              {students.map(st => (
+                <option key={st._id} value={st._id}>{st.name} ({st.email})</option>
+              ))}
+            </select>
+          </div>
+
+          {(() => {
+            const st = students.find(s => s._id === expandedStudent);
+            if (!st) return (
+              <p className="text-slate-500 text-center py-16">Select a student above to preview their view.</p>
+            );
+
+            return (
+              <div className="space-y-4">
+                {/* Student identity card */}
+                <div className="flex items-center gap-4 p-5 glass-panel rounded-2xl">
+                  <div className="w-12 h-12 rounded-full bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 font-bold text-lg">
+                    {st.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="font-bold text-white text-lg">{st.name}</p>
+                    <p className="text-slate-400 text-sm">{st.email}</p>
+                    <p className="text-xs text-brand-400 mt-1">{st.enrollments.length} course(s) enrolled</p>
+                  </div>
+                </div>
+
+                {st.enrollments.length === 0 ? (
+                  <p className="text-slate-500 text-center py-8">This student has no enrollments.</p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {st.enrollments.map(enrollment => {
+                      const course = courses.find(c => c.title === enrollment.courseTitle);
+                      return (
+                        <div key={enrollment.enrollmentId} className="glass-panel rounded-2xl overflow-hidden">
+                          {course?.thumbnail && (
+                            <img src={course.thumbnail} alt={enrollment.courseTitle}
+                              className="w-full h-32 object-cover opacity-70"
+                              onError={(e) => e.target.style.display = 'none'} />
+                          )}
+                          <div className="p-5 space-y-3">
+                            <h3 className="font-bold text-white">{enrollment.courseTitle}</h3>
+                            <div className="flex justify-between text-xs text-slate-500 mb-1">
+                              <span>Progress</span>
+                              <span className="text-brand-400 font-bold">{enrollment.progress}%</span>
+                            </div>
+                            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-gradient-to-r from-brand-500 to-indigo-500 rounded-full transition-all duration-500"
+                                style={{ width: `${enrollment.progress}%` }}
+                              />
+                            </div>
+                            <p className="text-xs text-slate-500">
+                              {enrollment.completedLessonsCount} / {enrollment.totalLessonsCount} lessons · {enrollment.duration}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
 
       {/* ADD / EDIT COURSE MODAL */}
       {showCourseModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 w-full max-w-lg shadow-2xl">
-
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">
                 {isEditing ? 'Edit Course' : 'Add New Course'}
               </h2>
-              <button
-                onClick={() => setShowCourseModal(false)}
-                className="p-2 rounded-xl hover:bg-slate-800 text-slate-400 transition-all"
-              >
+              <button onClick={() => setShowCourseModal(false)}
+                className="p-2 rounded-xl hover:bg-slate-800 text-slate-400 transition-all">
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleSubmitCourse} className="space-y-4">
-
               <div>
                 <label className="text-xs font-bold uppercase text-slate-500 mb-1.5 block">Title *</label>
-                <input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                <input value={title} onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Introduction to React"
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-sm"
-                  required
-                />
+                  required />
               </div>
 
               <div>
                 <label className="text-xs font-bold uppercase text-slate-500 mb-1.5 block">Description *</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Brief course description..."
-                  rows={3}
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Brief course description..." rows={3}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-sm resize-none"
-                  required
-                />
+                  required />
               </div>
 
               <div>
                 <label className="text-xs font-bold uppercase text-slate-500 mb-1.5 block">Duration *</label>
-                <input
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
+                <input value={duration} onChange={(e) => setDuration(e.target.value)}
                   placeholder="e.g. 6 hours"
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-sm"
-                  required
-                />
+                  required />
               </div>
 
               <div>
                 <label className="text-xs font-bold uppercase text-slate-500 mb-1.5 block">Thumbnail URL</label>
-                <input
-                  value={thumbnail}
-                  onChange={(e) => setThumbnail(e.target.value)}
+                <input value={thumbnail} onChange={(e) => setThumbnail(e.target.value)}
                   placeholder="https://example.com/image.jpg"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-sm"
-                />
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-sm" />
               </div>
 
-              {/* Lessons */}
               <div>
                 <label className="text-xs font-bold uppercase text-slate-500 mb-1.5 block">Lessons</label>
                 <div className="flex gap-2 mb-2">
-                  <input
-                    value={newLessonInput}
-                    onChange={(e) => setNewLessonInput(e.target.value)}
+                  <input value={newLessonInput} onChange={(e) => setNewLessonInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddLesson())}
                     placeholder="Add a lesson title..."
-                    className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddLesson}
-                    className="px-3 py-2.5 bg-brand-500 hover:bg-brand-600 rounded-xl text-white transition-all"
-                  >
+                    className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 text-sm" />
+                  <button type="button" onClick={handleAddLesson}
+                    className="px-3 py-2.5 bg-brand-500 hover:bg-brand-600 rounded-xl text-white transition-all">
                     <ListPlus size={16} />
                   </button>
                 </div>
-
                 {lessons.length > 0 && (
                   <div className="space-y-1.5 max-h-36 overflow-y-auto">
                     {lessons.map((lesson, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center justify-between bg-slate-800/60 px-3 py-2 rounded-lg text-sm"
-                      >
+                      <div key={idx}
+                        className="flex items-center justify-between bg-slate-800/60 px-3 py-2 rounded-lg text-sm">
                         <span className="text-slate-300 flex items-center gap-2">
                           <span className="text-xs text-slate-500 font-bold w-5">{idx + 1}.</span>
                           {lesson}
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveLesson(idx)}
-                          className="text-slate-500 hover:text-rose-400 transition-colors"
-                        >
+                        <button type="button" onClick={() => handleRemoveLesson(idx)}
+                          className="text-slate-500 hover:text-rose-400 transition-colors">
                           <X size={14} />
                         </button>
                       </div>
@@ -389,21 +476,15 @@ const AdminPanel = () => {
               </div>
 
               <div className="flex gap-3 pt-2">
-                <button
-                  type="submit"
-                  className="flex-1 bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 rounded-xl transition-all text-sm"
-                >
+                <button type="submit"
+                  className="flex-1 bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 rounded-xl transition-all text-sm">
                   {isEditing ? 'Update Course' : 'Create Course'}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setShowCourseModal(false)}
-                  className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm transition-all"
-                >
+                <button type="button" onClick={() => setShowCourseModal(false)}
+                  className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm transition-all">
                   Cancel
                 </button>
               </div>
-
             </form>
           </div>
         </div>
