@@ -4,7 +4,8 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { BookOpen, Award, ArrowRight, PlayCircle, Clock, BookMarked, Activity } from 'lucide-react';
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API = `${BASE}/api`;
 
 const Dashboard = () => {
   const { user } = useAuth();
